@@ -399,8 +399,21 @@
 </footer>
 
 <script>
-  const DAT_FILE       = "5129707283.dat";
-  const STORAGE_KEY    = "wx_extra_locations"; // localStorage key for user-added locations
+  const DAT_FILE    = "5129707283.dat";
+  const STORAGE_KEY = "wx_extra_locations";
+
+  // In-memory fallback when localStorage is unavailable (e.g. sandboxed iframes)
+  let _memExtras = null;
+
+  function storageGet() {
+    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
+    catch(e) { return _memExtras || []; }
+  }
+
+  function storageSet(arr) {
+    _memExtras = arr;
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); } catch(e) {}
+  }
 
   // WMO weather code → { label, emoji }
   const WMO = {
@@ -469,7 +482,7 @@
         tz:       parts[4].trim(),
       };
     });
-    const extras = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const extras = storageGet();
     return [...base, ...extras].map((loc, idx) => ({ ...loc, idx }));
   }
 
@@ -500,9 +513,9 @@
 
   // ── Save a new location to localStorage ──────────────────────────────────
   function saveLocation(loc) {
-    const extras = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const extras = storageGet();
     extras.push({ name: loc.name, subtitle: loc.subtitle, lat: loc.lat, lon: loc.lon, tz: loc.tz });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(extras));
+    storageSet(extras);
   }
 
   // ── Navigate to another location (same file, new ?loc= param) ─────────────
