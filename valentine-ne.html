@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title id="page-title">Weather</title>
+  <style>
+    :root {
+      --bg: #0f1923;
+      --card: #1a2635;
+      --card2: #1f2e40;
+      --accent: #4a9eff;
+      --accent2: #64b5f6;
+      --text: #e8f0fe;
+      --muted: #8eaec8;
+      --border: #2a3f55;
+      --rain: #60a5fa;
+      --snow: #bfdbfe;
+      --sun: #fbbf24;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 24px;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
+      padding: 20px 16px 16px;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    header h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #fff;
+    }
+    header p.subtitle {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+    #updated {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* LOADING */
+    #loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      gap: 16px;
+      color: var(--muted);
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #error-msg {
+      display: none;
+      padding: 20px 16px;
+      text-align: center;
+      color: #f87171;
+    }
+
+    /* CURRENT CONDITIONS */
+    #current-card {
+      display: none;
+      margin: 16px 12px 0;
+      background: linear-gradient(135deg, #1a3a5c 0%, #1a2635 100%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 16px 16px;
+    }
+    .current-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .current-icon {
+      font-size: 4rem;
+      line-height: 1;
+    }
+    .current-temps {
+      text-align: right;
+    }
+    .temp-main {
+      font-size: 3.2rem;
+      font-weight: 700;
+      line-height: 1;
+      color: #fff;
+    }
+    .temp-feels {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .current-desc {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent2);
+      margin-top: 10px;
+    }
+    .current-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .stat-box {
+      background: rgba(255,255,255,0.05);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .stat-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .stat-val {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 2px;
+    }
+
+    /* SECTION TITLE */
+    .section-title {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin: 18px 16px 8px;
+      font-weight: 600;
+    }
+
+    /* 10-DAY FORECAST */
+    #forecast-list {
+      display: none;
+      margin: 0 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .day-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .day-row:last-child { border-bottom: none; }
+    .day-row:active { background: var(--card2); }
+    .day-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .day-name.today-label { color: var(--accent); }
+    .day-icon { font-size: 1.5rem; text-align: center; }
+    .day-desc {
+      font-size: 0.88rem;
+      color: var(--muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .day-precip {
+      font-size: 0.65rem;
+      color: var(--rain);
+      margin-top: 1px;
+    }
+    .day-temps {
+      text-align: right;
+      white-space: nowrap;
+    }
+    .hi { font-size: 0.95rem; font-weight: 700; color: #fff; }
+    .lo { font-size: 0.85rem; color: var(--muted); margin-left: 5px; }
+
+    /* HISTORY TABLE */
+    #history-list {
+      display: none;
+      margin: 0 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .hist-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .hist-row:last-child { border-bottom: none; }
+    .hist-row:active { background: var(--card2); }
+    .hist-date {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .hist-icon { font-size: 1.5rem; text-align: center; }
+    .hist-cell {
+      font-size: 0.88rem;
+      text-align: right;
+      color: var(--text);
+    }
+
+    /* OTHER LOCATIONS */
+    #other-locations {
+      display: none;
+      margin: 0 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .loc-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 16px;
+      border-bottom: 1px solid var(--border);
+      text-decoration: none;
+      color: var(--text);
+      transition: background 0.15s;
+    }
+    .loc-row:last-child { border-bottom: none; }
+    .loc-row:active { background: var(--card2); }
+    .loc-name {
+      font-size: 0.92rem;
+      font-weight: 600;
+    }
+    .loc-sub {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+    .loc-arrow {
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    /* CREDIT */
+    footer {
+      display: none;
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.65rem;
+      color: var(--muted);
+      padding: 0 12px;
+    }
+    footer a { color: var(--muted); text-decoration: underline; }
+
+    /* REFRESH BUTTON */
+    #refresh-btn {
+      display: none;
+      margin: 14px auto 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--accent);
+      font-size: 0.8rem;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    #refresh-btn:active { opacity: 0.7; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📍 <span id="location-name"></span></h1>
+  <p class="subtitle" id="location-sub"></p>
+  <p id="updated"></p>
+</header>
+
+<div id="loading">
+  <div class="spinner"></div>
+  <span>Fetching weather…</span>
+</div>
+<div id="error-msg"></div>
+
+<!-- Current conditions -->
+<div id="current-card">
+  <div class="current-top">
+    <div class="current-icon" id="cur-icon">—</div>
+    <div class="current-temps">
+      <div class="temp-main" id="cur-temp">—</div>
+      <div class="temp-feels" id="cur-feels">—</div>
+    </div>
+  </div>
+  <div class="current-desc" id="cur-desc">—</div>
+  <div class="current-grid">
+    <div class="stat-box">
+      <div class="stat-label">Humidity</div>
+      <div class="stat-val" id="cur-hum">—</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Wind</div>
+      <div class="stat-val" id="cur-wind">—</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Precip Today</div>
+      <div class="stat-val" id="cur-precip">—</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">UV Index</div>
+      <div class="stat-val" id="cur-uv">—</div>
+    </div>
+  </div>
+</div>
+
+<button id="refresh-btn" onclick="loadWeather()">↻ Refresh</button>
+
+<p class="section-title" id="forecast-label" style="display:none;">10-Day Forecast</p>
+<div id="forecast-list"></div>
+
+<p class="section-title" id="history-label" style="display:none;">Previous 10 Days</p>
+<div id="history-list"></div>
+
+<p class="section-title" id="other-label" style="display:none;">Other Locations</p>
+<div id="other-locations"></div>
+
+<footer id="footer">
+  Data from <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> (CC BY 4.0) · Updated every 15 min
+</footer>
+
+<script>
+  // ============================================================
+  // LOCATION CONFIGURATION — edit these values for any location
+  // ============================================================
+  const LAT           = 42.8733;
+  const LON           = -100.5679;
+  const TZ            = "America/Chicago";
+  const LOCATION_NAME = "Valentine, NE";
+  const LOCATION_SUB  = "Cherry County · Elev. 2,589 ft";
+  const THIS_FILE     = "valentine-ne.html"; // used to exclude self from other-locations list
+  const DAT_FILE      = "5129707283.dat";    // location data file
+  // ============================================================
+
+  // WMO weather code → { label, emoji }
+  const WMO = {
+    0:  { label: "Clear Sky",           emoji: "☀️" },
+    1:  { label: "Mainly Clear",        emoji: "🌤️" },
+    2:  { label: "Partly Cloudy",       emoji: "⛅" },
+    3:  { label: "Overcast",            emoji: "☁️" },
+    45: { label: "Fog",                 emoji: "🌫️" },
+    48: { label: "Freezing Fog",        emoji: "🌫️" },
+    51: { label: "Light Drizzle",       emoji: "🌦️" },
+    53: { label: "Drizzle",             emoji: "🌦️" },
+    55: { label: "Heavy Drizzle",       emoji: "🌧️" },
+    61: { label: "Light Rain",          emoji: "🌧️" },
+    63: { label: "Rain",                emoji: "🌧️" },
+    65: { label: "Heavy Rain",          emoji: "🌧️" },
+    71: { label: "Light Snow",          emoji: "🌨️" },
+    73: { label: "Snow",                emoji: "❄️" },
+    75: { label: "Heavy Snow",          emoji: "❄️" },
+    77: { label: "Snow Grains",         emoji: "🌨️" },
+    80: { label: "Light Showers",       emoji: "🌦️" },
+    81: { label: "Rain Showers",        emoji: "🌧️" },
+    82: { label: "Heavy Showers",       emoji: "⛈️" },
+    85: { label: "Snow Showers",        emoji: "🌨️" },
+    86: { label: "Heavy Snow Showers",  emoji: "❄️" },
+    95: { label: "Thunderstorm",        emoji: "⛈️" },
+    96: { label: "Thunderstorm w/ Hail","emoji": "⛈️" },
+    99: { label: "Heavy Thunderstorm",  emoji: "⛈️" },
+  };
+
+  function wmo(code) {
+    return WMO[code] || { label: "Unknown", emoji: "🌡️" };
+  }
+
+  function windDir(deg) {
+    const dirs = ["N","NE","E","SE","S","SW","W","NW"];
+    return dirs[Math.round(deg / 45) % 8];
+  }
+
+  function dayLabel(isoDate, idx) {
+    const d = new Date(isoDate + "T12:00:00");
+    if (idx === 0) return "Today";
+    if (idx === 1) return "Tomorrow";
+    return d.toLocaleDateString("en-US", { weekday: "long" });
+  }
+
+  function uvLabel(uv) {
+    if (uv < 3)  return "Low";
+    if (uv < 6)  return "Moderate";
+    if (uv < 8)  return "High";
+    if (uv < 11) return "Very High";
+    return "Extreme";
+  }
+
+  function show(id)  { document.getElementById(id).style.display = "block"; }
+  function hide(id)  { document.getElementById(id).style.display = "none"; }
+  function blockShow(id) { document.getElementById(id).style.display = "block"; }
+
+  async function buildOtherLocations() {
+    try {
+      const res = await fetch(DAT_FILE);
+      const text = await res.text();
+      const lines = text.trim().split("\n").slice(1); // skip header
+      const container = document.getElementById("other-locations");
+      container.innerHTML = "";
+      let count = 0;
+      for (const line of lines) {
+        const [name, subtitle, , , , file] = line.split(",");
+        if (file.trim() === THIS_FILE) continue;
+        const a = document.createElement("a");
+        a.href = file.trim();
+        a.className = "loc-row";
+        a.innerHTML =
+          `<div><div class="loc-name">${name.trim()}</div>` +
+          `<div class="loc-sub">${subtitle.trim()}</div></div>` +
+          `<div class="loc-arrow">›</div>`;
+        container.appendChild(a);
+        count++;
+      }
+      if (count > 0) {
+        blockShow("other-label");
+        blockShow("other-locations");
+      }
+    } catch (e) {
+      // silently skip if dat file unavailable
+    }
+  }
+
+  async function loadWeather() {
+    // Reset
+    hide("current-card");
+    hide("forecast-list");
+    hide("history-list");
+    hide("other-locations");
+    hide("error-msg");
+    hide("forecast-label");
+    hide("history-label");
+    hide("other-label");
+    hide("footer");
+    hide("refresh-btn");
+    blockShow("loading");
+
+    const forecastUrl =
+      `https://api.open-meteo.com/v1/forecast` +
+      `?latitude=${LAT}&longitude=${LON}` +
+      `&current=temperature_2m,apparent_temperature,relative_humidity_2m,` +
+        `wind_speed_10m,wind_direction_10m,weather_code,precipitation` +
+      `&daily=weather_code,temperature_2m_max,temperature_2m_min,` +
+        `precipitation_sum,wind_speed_10m_max,uv_index_max` +
+      `&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch` +
+      `&timezone=${encodeURIComponent(TZ)}&forecast_days=10`;
+
+    const historyUrl =
+      `https://api.open-meteo.com/v1/forecast` +
+      `?latitude=${LAT}&longitude=${LON}` +
+      `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,cloud_cover_mean` +
+      `&temperature_unit=fahrenheit&precipitation_unit=inch` +
+      `&timezone=${encodeURIComponent(TZ)}&past_days=10&forecast_days=0`;
+
+    try {
+      const [res, histRes] = await Promise.all([fetch(forecastUrl), fetch(historyUrl)]);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      if (!histRes.ok) throw new Error(`History HTTP ${histRes.status}`);
+      const data = await res.json();
+      const histData = await histRes.json();
+
+      // --- Current ---
+      const c = data.current;
+      const cw = wmo(c.weather_code);
+      document.getElementById("cur-icon").textContent  = cw.emoji;
+      document.getElementById("cur-temp").textContent  = `${Math.round(c.temperature_2m)}°`;
+      document.getElementById("cur-feels").textContent = `Feels like ${Math.round(c.apparent_temperature)}°F`;
+      document.getElementById("cur-desc").textContent  = cw.label;
+      document.getElementById("cur-hum").textContent   = `${c.relative_humidity_2m}%`;
+      document.getElementById("cur-wind").textContent  =
+        `${Math.round(c.wind_speed_10m)} mph ${windDir(c.wind_direction_10m)}`;
+      document.getElementById("cur-precip").textContent =
+        c.precipitation > 0 ? `${c.precipitation.toFixed(2)}"` : "None";
+      // UV from today's daily
+      const uvVal = data.daily.uv_index_max[0];
+      document.getElementById("cur-uv").textContent =
+        `${Math.round(uvVal)} · ${uvLabel(uvVal)}`;
+
+      // Timestamp
+      const now = new Date();
+      document.getElementById("updated").textContent =
+        `Updated ${now.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
+
+      // --- Forecast ---
+      const d = data.daily;
+      const list = document.getElementById("forecast-list");
+      list.innerHTML = "";
+      for (let i = 0; i < d.time.length; i++) {
+        const dw = wmo(d.weather_code[i]);
+        const row = document.createElement("div");
+        row.className = "day-row";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "day-name" + (i === 0 ? " today-label" : "");
+        nameDiv.textContent = dayLabel(d.time[i], i);
+
+        const iconDiv = document.createElement("div");
+        iconDiv.className = "day-icon";
+        iconDiv.textContent = dw.emoji;
+
+        const infoDiv = document.createElement("div");
+        const descEl = document.createElement("div");
+        descEl.className = "day-desc";
+        descEl.textContent = dw.label;
+        const precipEl = document.createElement("div");
+        precipEl.className = "day-precip";
+        precipEl.textContent = d.precipitation_sum[i] > 0
+          ? `💧 ${d.precipitation_sum[i].toFixed(2)}"` : "";
+        infoDiv.append(descEl, precipEl);
+
+        const tempDiv = document.createElement("div");
+        tempDiv.className = "day-temps";
+        tempDiv.innerHTML =
+          `<span class="hi">${Math.round(d.temperature_2m_max[i])}°</span>` +
+          `<span style="color:var(--muted);margin:0 3px">/</span>` +
+          `<span class="lo">${Math.round(d.temperature_2m_min[i])}°</span>`;
+
+        row.append(nameDiv, iconDiv, infoDiv, tempDiv);
+        list.appendChild(row);
+      }
+
+      // --- History ---
+      const h = histData.daily;
+      const histList = document.getElementById("history-list");
+      histList.innerHTML = "";
+
+      // Most-recent day first
+      for (let i = h.time.length - 1; i >= 0; i--) {
+        const hw = wmo(h.weather_code[i]);
+        const dateObj = new Date(h.time[i] + "T12:00:00");
+        const weekday = dateObj.toLocaleDateString("en-US", { weekday: "short" });
+        const dateStr = `${weekday} ${dateObj.getMonth()+1}/${dateObj.getDate()}`;
+
+        const row = document.createElement("div");
+        row.className = "hist-row";
+
+        const precipStr = h.precipitation_sum[i] > 0
+          ? `${h.precipitation_sum[i].toFixed(2)}"`
+          : `<span style="color:var(--muted)">—</span>`;
+
+        row.innerHTML =
+          `<div class="hist-date">${dateStr}</div>` +
+          `<div class="hist-icon">${hw.emoji}</div>` +
+          `<div class="hist-cell"><span class="hi">${Math.round(h.temperature_2m_max[i])}°</span><span style="color:var(--muted);margin:0 3px">/</span><span class="lo">${Math.round(h.temperature_2m_min[i])}°</span></div>` +
+          `<div class="hist-cell">${precipStr}</div>`;
+
+        histList.appendChild(row);
+      }
+
+      hide("loading");
+      blockShow("current-card");
+      blockShow("forecast-label");
+      blockShow("forecast-list");
+      blockShow("history-label");
+      blockShow("history-list");
+      buildOtherLocations();
+      blockShow("refresh-btn");
+      blockShow("footer");
+
+    } catch (err) {
+      hide("loading");
+      const errEl = document.getElementById("error-msg");
+      errEl.textContent = `⚠️ Could not load weather data. ${err.message}`;
+      errEl.style.display = "block";
+      blockShow("refresh-btn");
+    }
+  }
+
+  // Populate header from config
+  document.getElementById("page-title").textContent  = LOCATION_NAME + " Weather";
+  document.getElementById("location-name").textContent = LOCATION_NAME;
+  document.getElementById("location-sub").textContent  = LOCATION_SUB;
+
+  loadWeather();
+</script>
+</body>
+</html>
