@@ -264,6 +264,55 @@
       font-size: 1rem;
     }
 
+    /* ADD LOCATION ROW */
+    .loc-add-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      border-top: 1px solid var(--border);
+    }
+    .loc-add-icon {
+      font-size: 1.3rem;
+      flex-shrink: 0;
+      opacity: 0.6;
+    }
+    .loc-add-input {
+      flex: 1;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.88rem;
+      font-family: inherit;
+      padding: 7px 10px;
+      outline: none;
+      min-width: 0;
+    }
+    .loc-add-input::placeholder { color: var(--muted); }
+    .loc-add-input:focus { border-color: var(--accent); }
+    .loc-add-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 7px 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .loc-add-btn:active { opacity: 0.8; }
+    .loc-add-btn:disabled { opacity: 0.4; cursor: default; }
+    .loc-add-status {
+      font-size: 0.7rem;
+      padding: 0 16px 10px;
+      color: var(--muted);
+    }
+    .loc-add-status.err { color: #f87171; }
+
     /* CREDIT */
     footer {
       display: none;
@@ -350,7 +399,8 @@
 </footer>
 
 <script>
-  const DAT_FILE = "5129707283.dat";
+  const DAT_FILE       = "5129707283.dat";
+  const STORAGE_KEY    = "wx_extra_locations"; // localStorage key for user-added locations
 
   // WMO weather code → { label, emoji }
   const WMO = {
@@ -405,14 +455,13 @@
   function show(id)  { document.getElementById(id).style.display = "block"; }
   function hide(id)  { document.getElementById(id).style.display = "none"; }
 
-  // ── Parse the .dat file into an array of location objects ──────────────────
+  // ── Parse the .dat file + localStorage into a location array ───────────────
   async function loadLocations() {
     const res = await fetch(DAT_FILE);
     const text = await res.text();
-    return text.trim().split("\n").slice(1).map((line, idx) => {
+    const base = text.trim().split("\n").slice(1).map(line => {
       const parts = line.split(",");
       return {
-        idx,
         name:     parts[0].trim(),
         subtitle: parts[1].trim(),
         lat:      parseFloat(parts[2]),
@@ -420,6 +469,40 @@
         tz:       parts[4].trim(),
       };
     });
+    const extras = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    return [...base, ...extras].map((loc, idx) => ({ ...loc, idx }));
+  }
+
+  // ── Geocode a free-text location name via Open-Meteo ─────────────────────
+  async function geocode(query) {
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Geocoding request failed");
+    const data = await res.json();
+    if (!data.results || data.results.length === 0) throw new Error("Location not found");
+    const r = data.results[0];
+    const state   = r.admin1  || "";
+    const county  = r.admin2  || "";
+    const elevFt  = r.elevation ? Math.round(r.elevation * 3.28084) : null;
+    const subtitle = [
+      county  ? county + " County" : "",
+      state,
+      elevFt  ? `Elev. ${elevFt.toLocaleString()} ft` : "",
+    ].filter(Boolean).join(" · ");
+    return {
+      name:     r.name + (state ? ", " + state : ""),
+      subtitle,
+      lat:      r.latitude,
+      lon:      r.longitude,
+      tz:       r.timezone,
+    };
+  }
+
+  // ── Save a new location to localStorage ──────────────────────────────────
+  function saveLocation(loc) {
+    const extras = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    extras.push({ name: loc.name, subtitle: loc.subtitle, lat: loc.lat, lon: loc.lon, tz: loc.tz });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(extras));
   }
 
   // ── Navigate to another location (same file, new ?loc= param) ─────────────
@@ -433,6 +516,7 @@
   function buildOtherLocations(locations, currentIdx) {
     const container = document.getElementById("other-locations");
     container.innerHTML = "";
+
     locations.forEach(loc => {
       if (loc.idx === currentIdx) return;
       const row = document.createElement("div");
@@ -444,6 +528,65 @@
         `<div class="loc-arrow">›</div>`;
       container.appendChild(row);
     });
+
+    // ── Add Location row ───────────────────────────────────────────────────
+    const addRow = document.createElement("div");
+    addRow.className = "loc-add-row";
+    addRow.innerHTML =
+      `<span class="loc-add-icon">＋</span>` +
+      `<input class="loc-add-input" id="loc-input" type="text" placeholder="City, State or ZIP" autocomplete="off" />` +
+      `<button class="loc-add-btn" id="loc-add-btn">Add</button>`;
+    container.appendChild(addRow);
+
+    const statusEl = document.createElement("div");
+    statusEl.className = "loc-add-status";
+    statusEl.id = "loc-add-status";
+    container.appendChild(statusEl);
+
+    const input = document.getElementById("loc-input");
+    const btn   = document.getElementById("loc-add-btn");
+
+    const setStatus = (msg, isErr = false) => {
+      statusEl.textContent = msg;
+      statusEl.className   = "loc-add-status" + (isErr ? " err" : "");
+    };
+
+    btn.addEventListener("click", async () => {
+      const query = input.value.trim();
+      if (!query) { setStatus("Enter a location name.", true); return; }
+      btn.disabled = true;
+      btn.textContent = "…";
+      setStatus("Looking up location…");
+      try {
+        const loc = await geocode(query);
+        // Check for duplicate
+        const all = await loadLocations();
+        const dup = all.find(l =>
+          Math.abs(l.lat - loc.lat) < 0.01 && Math.abs(l.lon - loc.lon) < 0.01
+        );
+        if (dup) {
+          setStatus(`Already in list as "${dup.name}".`, true);
+          btn.disabled = false;
+          btn.textContent = "Add";
+          return;
+        }
+        saveLocation(loc);
+        setStatus(`Added ${loc.name} — loading…`);
+        // Navigate to the new location (it will be last in the list)
+        const newIdx = all.length; // index after save
+        setTimeout(() => goTo(newIdx), 600);
+      } catch (e) {
+        setStatus(e.message || "Could not find that location.", true);
+        btn.disabled = false;
+        btn.textContent = "Add";
+      }
+    });
+
+    // Allow Enter key
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") btn.click();
+    });
+
     show("other-label");
     show("other-locations");
   }
