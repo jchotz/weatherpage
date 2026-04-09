@@ -1,0 +1,546 @@
+{
+  "timestamp": "2026-04-09T14:54:48.586Z",
+  "target": "http://localhost:8765/5129707283.html",
+  "summary": {
+    "total": 89,
+    "passed": 85,
+    "failed": 4,
+    "pct": 96
+  },
+  "results": [
+    {
+      "id": "01-01",
+      "status": "PASS",
+      "description": "DAT file is accessible (HTTP 200)",
+      "detail": "got 200"
+    },
+    {
+      "id": "01-02",
+      "status": "PASS",
+      "description": "DAT file has a header row",
+      "detail": ""
+    },
+    {
+      "id": "01-03",
+      "status": "PASS",
+      "description": "DAT file has at least 4 location rows",
+      "detail": "found 4 data rows"
+    },
+    {
+      "id": "01-04",
+      "status": "PASS",
+      "description": "All DAT rows have valid name, subtitle, lat, lon, tz fields",
+      "detail": ""
+    },
+    {
+      "id": "01-05",
+      "status": "PASS",
+      "description": "Seed location: Valentine NE present",
+      "detail": ""
+    },
+    {
+      "id": "01-06",
+      "status": "PASS",
+      "description": "Seed location: Carrizo Springs TX present",
+      "detail": ""
+    },
+    {
+      "id": "01-07",
+      "status": "PASS",
+      "description": "Seed location: Princeton OR present",
+      "detail": ""
+    },
+    {
+      "id": "01-08",
+      "status": "PASS",
+      "description": "Seed location: Buffalo WY present",
+      "detail": ""
+    },
+    {
+      "id": "02-01",
+      "status": "PASS",
+      "description": "Page has correct <title> element",
+      "detail": ""
+    },
+    {
+      "id": "02-02",
+      "status": "PASS",
+      "description": "Page has <header> with location name span",
+      "detail": ""
+    },
+    {
+      "id": "02-03",
+      "status": "PASS",
+      "description": "Page has subtitle element",
+      "detail": ""
+    },
+    {
+      "id": "02-04",
+      "status": "PASS",
+      "description": "Page has loading spinner on initial load",
+      "detail": ""
+    },
+    {
+      "id": "02-05",
+      "status": "PASS",
+      "description": "Page has current conditions card",
+      "detail": ""
+    },
+    {
+      "id": "02-06",
+      "status": "PASS",
+      "description": "Page has 10-day forecast container",
+      "detail": ""
+    },
+    {
+      "id": "02-07",
+      "status": "PASS",
+      "description": "Page has history container",
+      "detail": ""
+    },
+    {
+      "id": "02-08",
+      "status": "PASS",
+      "description": "Page has other-locations container",
+      "detail": ""
+    },
+    {
+      "id": "02-09",
+      "status": "PASS",
+      "description": "Page has refresh button",
+      "detail": ""
+    },
+    {
+      "id": "02-10",
+      "status": "PASS",
+      "description": "Page has footer with Open-Meteo credit",
+      "detail": ""
+    },
+    {
+      "id": "03-01",
+      "status": "PASS",
+      "description": "Default location name is displayed in header",
+      "detail": "got: \"Valentine NE\""
+    },
+    {
+      "id": "03-02",
+      "status": "PASS",
+      "description": "Default location is Valentine (first in dat)",
+      "detail": "got: \"Valentine NE\""
+    },
+    {
+      "id": "03-03",
+      "status": "PASS",
+      "description": "Subtitle is populated",
+      "detail": "got: \"Cherry County · Elev. 2589 ft\""
+    },
+    {
+      "id": "03-04",
+      "status": "PASS",
+      "description": "Page title includes location name",
+      "detail": "got: \"Valentine NE Weather\""
+    },
+    {
+      "id": "04-01",
+      "status": "PASS",
+      "description": "Current conditions card is visible after load",
+      "detail": ""
+    },
+    {
+      "id": "04-02",
+      "status": "PASS",
+      "description": "Weather icon is populated (emoji)",
+      "detail": "got: \"☀️\""
+    },
+    {
+      "id": "04-03",
+      "status": "PASS",
+      "description": "Temperature is displayed (e.g. \"38°\")",
+      "detail": "got: \"37°\""
+    },
+    {
+      "id": "04-04",
+      "status": "PASS",
+      "description": "Feels-like temperature is displayed",
+      "detail": "got: \"Feels like 27°F\""
+    },
+    {
+      "id": "04-05",
+      "status": "PASS",
+      "description": "Condition description is populated",
+      "detail": "got: \"Clear Sky\""
+    },
+    {
+      "id": "04-06",
+      "status": "PASS",
+      "description": "Humidity stat shows a percentage",
+      "detail": "got: \"59%\""
+    },
+    {
+      "id": "04-07",
+      "status": "PASS",
+      "description": "Wind stat shows mph and direction",
+      "detail": "got: \"10 mph E\""
+    },
+    {
+      "id": "04-08",
+      "status": "PASS",
+      "description": "Precip stat is populated",
+      "detail": "got: \"None\""
+    },
+    {
+      "id": "04-09",
+      "status": "PASS",
+      "description": "UV Index stat has numeric value and label",
+      "detail": "got: \"7 · High\""
+    },
+    {
+      "id": "04-10",
+      "status": "PASS",
+      "description": "Updated timestamp is displayed",
+      "detail": "got: \"Updated 2:54 PM\""
+    },
+    {
+      "id": "05-01",
+      "status": "PASS",
+      "description": "10-day forecast list is visible",
+      "detail": ""
+    },
+    {
+      "id": "05-02",
+      "status": "PASS",
+      "description": "Forecast has exactly 10 rows",
+      "detail": "got: 10"
+    },
+    {
+      "id": "05-03",
+      "status": "PASS",
+      "description": "First forecast row is labelled \"Today\"",
+      "detail": "got: \"Today\""
+    },
+    {
+      "id": "05-04",
+      "status": "PASS",
+      "description": "Second forecast row is labelled \"Tomorrow\"",
+      "detail": "got: \"Tomorrow\""
+    },
+    {
+      "id": "05-05",
+      "status": "PASS",
+      "description": "Temperatures show Hi / Lo with \"/\" separator",
+      "detail": "got: \"57°/27°\""
+    },
+    {
+      "id": "05-06",
+      "status": "PASS",
+      "description": "Every forecast row has a weather icon",
+      "detail": "empty icons found"
+    },
+    {
+      "id": "05-07",
+      "status": "PASS",
+      "description": "\"10-Day Forecast\" section label is visible",
+      "detail": ""
+    },
+    {
+      "id": "06-01",
+      "status": "PASS",
+      "description": "History list is visible",
+      "detail": ""
+    },
+    {
+      "id": "06-02",
+      "status": "PASS",
+      "description": "History has exactly 10 rows",
+      "detail": "got: 10"
+    },
+    {
+      "id": "06-03",
+      "status": "PASS",
+      "description": "History rows have a date label",
+      "detail": "got: \"Wed 4/8\""
+    },
+    {
+      "id": "06-04",
+      "status": "PASS",
+      "description": "History temperatures show Hi / Lo with \"/\" separator",
+      "detail": ""
+    },
+    {
+      "id": "06-05",
+      "status": "PASS",
+      "description": "\"Previous 10 Days\" section label is visible",
+      "detail": ""
+    },
+    {
+      "id": "07-01",
+      "status": "PASS",
+      "description": "Other Locations section is visible",
+      "detail": ""
+    },
+    {
+      "id": "07-02",
+      "status": "PASS",
+      "description": "Other Locations has 3 rows (4 total minus current)",
+      "detail": "got: 3"
+    },
+    {
+      "id": "07-03",
+      "status": "PASS",
+      "description": "Current location is excluded from Other Locations",
+      "detail": "found current loc in list: Valentine NE"
+    },
+    {
+      "id": "07-04",
+      "status": "PASS",
+      "description": "Each other-location row has a subtitle",
+      "detail": ""
+    },
+    {
+      "id": "07-05",
+      "status": "PASS",
+      "description": "Each other-location row has a navigation arrow",
+      "detail": ""
+    },
+    {
+      "id": "07-06",
+      "status": "PASS",
+      "description": "\"Other Locations\" section label is visible",
+      "detail": ""
+    },
+    {
+      "id": "08-01",
+      "status": "PASS",
+      "description": "?loc=1 loads the second location (Carrizo Springs)",
+      "detail": "got: \"Carrizo Springs TX\""
+    },
+    {
+      "id": "08-02",
+      "status": "PASS",
+      "description": "?loc=2 loads the third location (Princeton)",
+      "detail": "got: \"Princeton OR\""
+    },
+    {
+      "id": "08-03",
+      "status": "PASS",
+      "description": "?loc=3 loads the fourth location (Buffalo)",
+      "detail": "got: \"Buffalo WY\""
+    },
+    {
+      "id": "08-04",
+      "status": "PASS",
+      "description": "Invalid ?loc= falls back to first location",
+      "detail": "got: \"Valentine NE\""
+    },
+    {
+      "id": "09-01",
+      "status": "PASS",
+      "description": "Clicking a location row navigates to that location",
+      "detail": "expected \"Carrizo Springs TX\", got \"Carrizo Springs TX\""
+    },
+    {
+      "id": "09-02",
+      "status": "PASS",
+      "description": "URL contains ?loc= parameter after navigation",
+      "detail": "url: http://localhost:8765/5129707283.html?loc=1"
+    },
+    {
+      "id": "09-03",
+      "status": "PASS",
+      "description": "After navigation, Other Locations still shows 3 rows",
+      "detail": "got: 3"
+    },
+    {
+      "id": "10-01",
+      "status": "PASS",
+      "description": "Add Location row is present at bottom of Other Locations",
+      "detail": ""
+    },
+    {
+      "id": "10-02",
+      "status": "PASS",
+      "description": "Add Location has a text input field",
+      "detail": ""
+    },
+    {
+      "id": "10-03",
+      "status": "PASS",
+      "description": "Add Location has an Add button",
+      "detail": ""
+    },
+    {
+      "id": "10-04",
+      "status": "PASS",
+      "description": "Submitting empty input shows an error message",
+      "detail": "got: \"Enter a location name.\""
+    },
+    {
+      "id": "10-05",
+      "status": "PASS",
+      "description": "Empty-submit error has error styling class",
+      "detail": ""
+    },
+    {
+      "id": "11-01",
+      "status": "PASS",
+      "description": "Geocoding shows a status message while in progress",
+      "detail": "got: \"Looking up location…\""
+    },
+    {
+      "id": "11-02",
+      "status": "PASS",
+      "description": "Status updates after geocode resolves",
+      "detail": "got: \"Location not found\""
+    },
+    {
+      "id": "11-03",
+      "status": "PASS",
+      "description": "Geocoding API was called with the location query",
+      "detail": "geocodeUrl: https://geocoding-api.open-meteo.com/v1/search?name=Scottsbluff%20Nebraska&count=1&language=en&format=json"
+    },
+    {
+      "id": "11-04",
+      "status": "FAIL",
+      "description": "Geocoding API returns valid results for the query",
+      "detail": "got: undefined"
+    },
+    {
+      "id": "12-01",
+      "status": "FAIL",
+      "description": "Duplicate location shows \"already in list\" error",
+      "detail": "got: \"Added Valentine, Nebraska — loading…\""
+    },
+    {
+      "id": "12-02",
+      "status": "FAIL",
+      "description": "Duplicate error has .err styling class",
+      "detail": "class: \"loc-add-status\""
+    },
+    {
+      "id": "12-03",
+      "status": "FAIL",
+      "description": "Add button is re-enabled after duplicate rejection",
+      "detail": ""
+    },
+    {
+      "id": "13-01",
+      "status": "PASS",
+      "description": "Refresh button is visible after load",
+      "detail": ""
+    },
+    {
+      "id": "13-02",
+      "status": "PASS",
+      "description": "After refresh, current conditions card is still visible",
+      "detail": ""
+    },
+    {
+      "id": "13-03",
+      "status": "PASS",
+      "description": "Updated timestamp is present after refresh",
+      "detail": ""
+    },
+    {
+      "id": "14-01",
+      "status": "PASS",
+      "description": "Body background is dark (#0f1923)",
+      "detail": "got: rgb(15, 25, 35)"
+    },
+    {
+      "id": "14-02",
+      "status": "PASS",
+      "description": "No horizontal scrollbar (no content overflow)",
+      "detail": "scrollWidth: 390, clientWidth: 390"
+    },
+    {
+      "id": "14-03",
+      "status": "PASS",
+      "description": "Viewport meta tag is set for mobile",
+      "detail": "got: \"width=device-width, initial-scale=1.0, maximum-scale=1.0\""
+    },
+    {
+      "id": "14-04",
+      "status": "PASS",
+      "description": "Forecast rows use 4-column CSS grid",
+      "detail": "got: \"78px 78px 78px 78px\""
+    },
+    {
+      "id": "14-05",
+      "status": "PASS",
+      "description": "History rows use 4-column CSS grid",
+      "detail": "got: \"78px 78px 78px 78px\""
+    },
+    {
+      "id": "14-06",
+      "status": "PASS",
+      "description": "Refresh button uses accent color (#4a9eff)",
+      "detail": "got: rgb(74, 158, 255)"
+    },
+    {
+      "id": "15-01",
+      "status": "PASS",
+      "description": "Forecast API is called (api.open-meteo.com)",
+      "detail": "found 2 calls"
+    },
+    {
+      "id": "15-02",
+      "status": "PASS",
+      "description": "Two separate forecast API calls made (forecast + history)",
+      "detail": "got 2"
+    },
+    {
+      "id": "15-03",
+      "status": "PASS",
+      "description": "Forecast call includes current conditions params",
+      "detail": ""
+    },
+    {
+      "id": "15-04",
+      "status": "PASS",
+      "description": "Forecast uses Fahrenheit temperature units",
+      "detail": "url: https://api.open-meteo.com/v1/forecast?latitude=42.8733&longitude=-100.5679&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago&forecast_days=10"
+    },
+    {
+      "id": "15-05",
+      "status": "PASS",
+      "description": "Forecast uses mph wind units",
+      "detail": "url: https://api.open-meteo.com/v1/forecast?latitude=42.8733&longitude=-100.5679&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago&forecast_days=10"
+    },
+    {
+      "id": "15-06",
+      "status": "PASS",
+      "description": "Forecast uses inch precipitation units",
+      "detail": "url: https://api.open-meteo.com/v1/forecast?latitude=42.8733&longitude=-100.5679&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago&forecast_days=10"
+    },
+    {
+      "id": "15-07",
+      "status": "PASS",
+      "description": "Forecast requests 10 days",
+      "detail": "url: https://api.open-meteo.com/v1/forecast?latitude=42.8733&longitude=-100.5679&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago&forecast_days=10"
+    },
+    {
+      "id": "15-08",
+      "status": "PASS",
+      "description": "Forecast includes timezone parameter",
+      "detail": "url: https://api.open-meteo.com/v1/forecast?latitude=42.8733&longitude=-100.5679&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,wind_speed_10m_max,uv_index_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago&forecast_days=10"
+    },
+    {
+      "id": "15-09",
+      "status": "PASS",
+      "description": "History call uses past_days parameter",
+      "detail": ""
+    },
+    {
+      "id": "15-10",
+      "status": "PASS",
+      "description": "History call requests past_days=10",
+      "detail": "url: https://api.open-meteo.com/v1/forecast?latitude=42.8733&longitude=-100.5679&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,cloud_cover_mean&temperature_unit=fahrenheit&precipitation_unit=inch&timezone=America%2FChicago&past_days=10&forecast_days=0"
+    },
+    {
+      "id": "15-11",
+      "status": "PASS",
+      "description": "History call includes cloud_cover_mean",
+      "detail": "url: https://api.open-meteo.com/v1/forecast?latitude=42.8733&longitude=-100.5679&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,cloud_cover_mean&temperature_unit=fahrenheit&precipitation_unit=inch&timezone=America%2FChicago&past_days=10&forecast_days=0"
+    }
+  ]
+}
