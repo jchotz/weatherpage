@@ -3,768 +3,502 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-  <title id="page-title">Weather</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="WeatherPage" />
+  <meta name="description" content="Your personal weather page for up to 10 locations — current conditions and 10-day history. No app needed." />
+  <title>WeatherPage.info</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="WeatherPage.info" />
+  <meta property="og:description" content="Dedicated mobile-friendly weather for your locations. No app required." />
+  <meta property="og:url" content="https://weatherpage.info" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
   <style>
-    :root {
-      --bg: #0f1923;
-      --card: #1a2635;
-      --card2: #1f2e40;
-      --accent: #4a9eff;
-      --accent2: #64b5f6;
-      --text: #e8f0fe;
-      --muted: #8eaec8;
-      --border: #2a3f55;
-      --rain: #60a5fa;
-      --snow: #bfdbfe;
-      --sun: #fbbf24;
-      --radius: 14px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      background: #0b1120;
+      color: #e2e8f0;
       min-height: 100vh;
-      padding: 0 0 24px;
+      line-height: 1.6;
+    }
+    img { display: block; max-width: 100%; }
+    button, input { font-family: inherit; }
+
+    :focus-visible {
+      outline: 2px solid #2563eb;
+      outline-offset: 3px;
+      border-radius: 4px;
     }
 
-    /* HEADER */
-    header {
-      background: linear-gradient(135deg, #0d2137 0%, #1a3a5c 100%);
-      padding: 20px 16px 16px;
-      text-align: center;
-      border-bottom: 1px solid var(--border);
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
-    header h1 {
-      font-size: 1.25rem;
+
+    /* ── Sky gradient hero ── */
+    .hero {
+      background: linear-gradient(160deg, #0b1120 0%, #0f2444 40%, #1a4a8a 75%, #2563eb 100%);
+      padding: 2.5rem 1.25rem 3.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Animated clouds */
+    .cloud {
+      position: absolute;
+      background: rgba(255,255,255,0.07);
+      border-radius: 50px;
+      animation: drift linear infinite;
+    }
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: inherit;
+      border-radius: 50%;
+    }
+    .c1 { width: 160px; height: 40px; top: 18%; left: -180px; animation-duration: 28s; }
+    .c1::before { width: 80px; height: 60px; top: -30px; left: 20px; }
+    .c1::after  { width: 60px; height: 45px; top: -20px; right: 20px; }
+    .c2 { width: 120px; height: 30px; top: 42%; left: -140px; animation-duration: 38s; animation-delay: -12s; }
+    .c2::before { width: 60px; height: 50px; top: -24px; left: 15px; }
+    .c2::after  { width: 45px; height: 36px; top: -16px; right: 15px; }
+    .c3 { width: 200px; height: 50px; top: 65%; left: -220px; animation-duration: 50s; animation-delay: -24s; opacity: 0.5; }
+    .c3::before { width: 90px; height: 70px; top: -35px; left: 25px; }
+    .c3::after  { width: 70px; height: 55px; top: -24px; right: 25px; }
+    @keyframes drift { from { transform: translateX(0); } to { transform: translateX(calc(100vw + 250px)); } }
+
+    /* Sun graphic */
+    .sun {
+      width: 80px; height: 80px;
+      background: radial-gradient(circle, #fbbf24 40%, #f59e0b 70%, transparent 100%);
+      border-radius: 50%;
+      margin: 0 auto 1rem;
+      box-shadow: 0 0 40px 10px rgba(251,191,36,0.35);
+      position: relative;
+      animation: pulse 4s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 40px 10px rgba(251,191,36,0.35); }
+      50%       { box-shadow: 0 0 60px 20px rgba(251,191,36,0.5); }
+    }
+
+    .hero-logo {
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
       font-weight: 700;
-      letter-spacing: 0.03em;
+      letter-spacing: -0.02em;
       color: #fff;
     }
-    header p.subtitle {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-    #updated {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 6px;
+    .hero-logo span { color: #93c5fd; font-weight: 300; }
+
+    .hero-tagline {
+      font-size: clamp(0.9rem, 2.5vw, 1.05rem);
+      color: #93c5fd;
+      margin-top: 0.4rem;
+      font-weight: 400;
     }
 
-    /* LOADING */
-    #loading {
+    /* Weather emoji strip */
+    .emoji-strip {
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
-      min-height: 60vh;
-      gap: 16px;
-      color: var(--muted);
-    }
-    .spinner {
-      width: 40px; height: 40px;
-      border: 3px solid var(--border);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    #error-msg {
-      display: none;
-      padding: 20px 16px;
-      text-align: center;
-      color: #f87171;
+      gap: clamp(0.75rem, 3vw, 1.5rem);
+      font-size: clamp(1.4rem, 5vw, 2rem);
+      margin-top: 1.5rem;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     }
 
-    /* CURRENT CONDITIONS */
-    #current-card {
-      display: none;
-      margin: 16px 12px 0;
-      background: linear-gradient(135deg, #1a3a5c 0%, #1a2635 100%);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 20px 16px 16px;
+    /* ── Main content ── */
+    main {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 0 1.25rem 4rem;
     }
-    .current-top {
+
+    /* ── Feature card ── */
+    .feature-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 1.25rem;
+      padding: 1.5rem 1.25rem;
+      margin-top: 2rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .feature-card h2 {
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      font-weight: 600;
+      color: #93c5fd;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .feature-card p {
+      font-size: clamp(0.875rem, 2.5vw, 0.95rem);
+      color: #cbd5e1;
+      line-height: 1.65;
+    }
+
+    /* Feature bullets */
+    .features-list {
+      list-style: none;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+      margin-top: 0.75rem;
+    }
+    .features-list li {
       display: flex;
       align-items: flex-start;
-      justify-content: space-between;
+      gap: 0.6rem;
+      font-size: clamp(0.875rem, 2.5vw, 0.95rem);
+      color: #cbd5e1;
     }
-    .current-icon {
-      font-size: 4rem;
-      line-height: 1;
-    }
-    .current-temps { text-align: right; }
-    .temp-main {
-      font-size: 3.2rem;
-      font-weight: 700;
-      line-height: 1;
-      color: #fff;
-    }
-    .temp-feels {
-      font-size: 0.78rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-    .current-desc {
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--accent2);
-      margin-top: 10px;
-    }
-    .current-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 14px;
-    }
-    .stat-box {
-      background: rgba(255,255,255,0.05);
-      border-radius: 10px;
-      padding: 10px 12px;
-    }
-    .stat-label {
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-    }
-    .stat-val {
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: #fff;
-      margin-top: 2px;
-    }
-
-    /* SECTION TITLE */
-    .section-title {
+    .features-list li .bullet {
+      flex-shrink: 0;
+      width: 22px; height: 22px;
+      background: #2563eb;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
       font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--muted);
-      margin: 18px 16px 8px;
-      font-weight: 600;
-    }
-
-    /* 10-DAY FORECAST */
-    #forecast-list {
-      display: none;
-      margin: 0 12px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .day-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
-    .day-row:last-child { border-bottom: none; }
-    .day-row:active { background: var(--card2); }
-    .day-name {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .day-name.today-label { color: var(--accent); }
-    .day-icon { font-size: 1.5rem; text-align: center; }
-    .day-desc {
-      font-size: 0.88rem;
-      color: var(--muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .day-precip {
-      font-size: 0.65rem;
-      color: var(--rain);
       margin-top: 1px;
     }
-    .day-temps {
-      text-align: right;
-      white-space: nowrap;
-    }
-    .hi { font-size: 0.95rem; font-weight: 700; color: #fff; }
-    .lo { font-size: 0.85rem; color: var(--muted); margin-left: 5px; }
 
-    /* HISTORY TABLE */
-    #history-list {
-      display: none;
-      margin: 0 12px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .hist-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr;
-      align-items: center;
-      gap: 8px;
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
-    }
-    .hist-row:last-child { border-bottom: none; }
-    .hist-row:active { background: var(--card2); }
-    .hist-date {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .hist-icon { font-size: 1.5rem; text-align: center; }
-    .hist-cell {
-      font-size: 0.88rem;
-      text-align: right;
-      color: var(--text);
-    }
-
-    /* OTHER LOCATIONS */
-    #other-locations {
-      display: none;
-      margin: 0 12px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .loc-row {
+    /* ── How it works steps ── */
+    .steps {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 13px 16px;
-      border-bottom: 1px solid var(--border);
-      text-decoration: none;
-      color: var(--text);
-      transition: background 0.15s;
-      cursor: pointer;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 0.75rem;
     }
-    .loc-row:last-child { border-bottom: none; }
-    .loc-row:active { background: var(--card2); }
-    .loc-name {
-      font-size: 0.92rem;
-      font-weight: 600;
-    }
-    .loc-sub {
-      font-size: 0.7rem;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    .loc-arrow {
-      color: var(--muted);
-      font-size: 1rem;
-    }
-
-    /* ADD LOCATION ROW */
-    .loc-add-row {
+    .step {
       display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 11px 16px;
-      border-top: 1px solid var(--border);
+      align-items: flex-start;
+      gap: 0.75rem;
     }
-    .loc-add-icon {
-      font-size: 1.3rem;
+    .step-num {
       flex-shrink: 0;
-      opacity: 0.6;
-    }
-    .loc-add-input {
-      flex: 1;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 0.88rem;
-      font-family: inherit;
-      padding: 7px 10px;
-      outline: none;
-      min-width: 0;
-    }
-    .loc-add-input::placeholder { color: var(--muted); }
-    .loc-add-input:focus { border-color: var(--accent); }
-    .loc-add-btn {
-      background: var(--accent);
-      border: none;
-      border-radius: 8px;
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
       color: #fff;
-      font-size: 0.82rem;
+    }
+    .step-text {
+      font-size: clamp(0.875rem, 2.5vw, 0.95rem);
+      color: #cbd5e1;
+      padding-top: 0.3rem;
+    }
+    .step-text strong { color: #e2e8f0; }
+
+    /* ── Phone number section ── */
+    .phone-section {
+      background: rgba(37,99,235,0.12);
+      border: 1px solid rgba(37,99,235,0.3);
+      border-radius: 1.25rem;
+      padding: 1.5rem 1.25rem;
+      margin-top: 2rem;
+    }
+    .phone-section h2 {
+      font-size: clamp(1rem, 3vw, 1.15rem);
       font-weight: 600;
-      font-family: inherit;
-      padding: 7px 14px;
+      color: #93c5fd;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .phone-section .sub {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 1.25rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .input-group label {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #94a3b8;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .input-row {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .input-row input, .phone-section input[type="tel"] {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      color: #e2e8f0;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+    .input-row input::placeholder,
+    .phone-section input[type="tel"]::placeholder { color: #475569; }
+    .input-row input:focus,
+    .phone-section input[type="tel"]:focus { border-color: #2563eb; }
+
+    .btn {
+      padding: 0.7rem 1.1rem;
+      border-radius: 0.75rem;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
       cursor: pointer;
-      flex-shrink: 0;
+      transition: opacity 0.2s, transform 0.1s;
       white-space: nowrap;
     }
-    .loc-add-btn:active { opacity: 0.8; }
-    .loc-add-btn:disabled { opacity: 0.4; cursor: default; }
-    .loc-add-status {
-      font-size: 0.7rem;
-      padding: 0 16px 10px;
-      color: var(--muted);
-    }
-    .loc-add-status.err { color: #f87171; }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #2563eb; color: #fff; }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-danger  { background: #dc2626; color: #fff; }
+    .btn-danger:hover  { opacity: 0.88; }
 
-    /* CREDIT */
+    .divider-line {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 1rem 0;
+    }
+
+    /* Status message */
+    .status-msg {
+      font-size: 0.82rem;
+      color: #64748b;
+      margin-top: 0.35rem;
+      min-height: 1.1rem;
+    }
+
+    /* ── Footer ── */
     footer {
-      display: none;
       text-align: center;
-      margin-top: 18px;
-      font-size: 0.65rem;
-      color: var(--muted);
-      padding: 0 12px;
+      padding: 2rem 1.25rem;
+      font-size: 0.78rem;
+      color: #334155;
+      border-top: 1px solid rgba(255,255,255,0.05);
     }
-    footer a { color: var(--muted); text-decoration: underline; }
+    footer a { color: #2563eb; text-decoration: none; }
 
-    /* REFRESH BUTTON */
-    #refresh-btn {
-      display: none;
-      margin: 14px auto 0;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      color: var(--accent);
-      font-size: 0.8rem;
-      padding: 8px 20px;
-      cursor: pointer;
-      font-family: inherit;
+    /* ── Tablet ── */
+    @media (min-width: 600px) {
+      .features-list { grid-template-columns: 1fr 1fr; }
+      .steps { gap: 0.75rem; }
     }
-    #refresh-btn:active { opacity: 0.7; }
+
+    /* ── Desktop ── */
+    @media (min-width: 900px) {
+      .hero { padding: 4rem 2rem 5rem; }
+      main { padding: 0 2rem 5rem; }
+      .feature-card, .phone-section { padding: 2rem; }
+    }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>📍 <span id="location-name"></span></h1>
-  <p class="subtitle" id="location-sub"></p>
-  <p id="updated"></p>
-</header>
+  <!-- Hero -->
+  <section class="hero" aria-label="Site hero">
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+    <div class="cloud c3"></div>
 
-<div id="loading">
-  <div class="spinner"></div>
-  <span>Fetching weather…</span>
-</div>
-<div id="error-msg"></div>
+    <div class="sun" role="img" aria-label="Sun graphic"></div>
 
-<div id="current-card">
-  <div class="current-top">
-    <div class="current-icon" id="cur-icon">—</div>
-    <div class="current-temps">
-      <div class="temp-main" id="cur-temp">—</div>
-      <div class="temp-feels" id="cur-feels">—</div>
+    <h1 class="hero-logo">Weather<span>Page</span>.info</h1>
+    <p class="hero-tagline">Your personal weather page — no app required</p>
+
+    <div class="emoji-strip" aria-hidden="true">
+      ☀️ 🌤 ⛅ 🌦 🌧 ⛈ 🌨 🌪 🌈
     </div>
-  </div>
-  <div class="current-desc" id="cur-desc">—</div>
-  <div class="current-grid">
-    <div class="stat-box">
-      <div class="stat-label">Humidity</div>
-      <div class="stat-val" id="cur-hum">—</div>
+  </section>
+
+  <main>
+
+    <!-- About -->
+    <div class="feature-card" role="region" aria-labelledby="about-heading">
+      <h2 id="about-heading">🌍 What is WeatherPage.info?</h2>
+      <p>
+        WeatherPage.info gives you a dedicated, mobile-friendly weather page for
+        <strong>up to 10 locations</strong>. See current conditions plus the
+        <strong>past 10 days of weather history</strong> — all in one simple link
+        you can save to your phone's home screen. No app to download, no account
+        required.
+      </p>
+      <ul class="features-list" role="list" style="margin-top:1rem;">
+        <li>
+          <span class="bullet" aria-hidden="true">✓</span>
+          Up to 10 saved locations
+        </li>
+        <li>
+          <span class="bullet" aria-hidden="true">✓</span>
+          Current conditions at a glance
+        </li>
+        <li>
+          <span class="bullet" aria-hidden="true">✓</span>
+          10-day historical weather
+        </li>
+        <li>
+          <span class="bullet" aria-hidden="true">✓</span>
+          Mobile, tablet &amp; desktop friendly
+        </li>
+        <li>
+          <span class="bullet" aria-hidden="true">✓</span>
+          Save link to home screen
+        </li>
+        <li>
+          <span class="bullet" aria-hidden="true">✓</span>
+          No app download needed
+        </li>
+      </ul>
     </div>
-    <div class="stat-box">
-      <div class="stat-label">Wind</div>
-      <div class="stat-val" id="cur-wind">—</div>
+
+    <!-- How it works -->
+    <div class="feature-card" role="region" aria-labelledby="how-heading">
+      <h2 id="how-heading">📱 How to Add to Your Home Screen</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text"><strong>Open Safari</strong> on your iPhone or iPad and go to <strong>weatherpage.info</strong></div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">Tap the <strong>Share</strong> button (the box with an arrow) at the bottom of the screen</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">Scroll down and tap <strong>"Add to Home Screen"</strong></div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">Tap <strong>Add</strong> — it now lives on your home screen like an app</div>
+        </div>
+      </div>
     </div>
-    <div class="stat-box">
-      <div class="stat-label">Precip Today</div>
-      <div class="stat-val" id="cur-precip">—</div>
-    </div>
-    <div class="stat-box">
-      <div class="stat-label">UV Index</div>
-      <div class="stat-val" id="cur-uv">—</div>
-    </div>
-  </div>
-</div>
 
-<button id="refresh-btn" onclick="init()">↻ Refresh</button>
+    <!-- Phone number section -->
+    <section class="phone-section" aria-labelledby="phone-heading">
+      <h2 id="phone-heading">📲 Phone Number</h2>
+      <p class="sub">Coming soon — register your phone number to get weather alerts</p>
 
-<p class="section-title" id="forecast-label" style="display:none;">10-Day Forecast</p>
-<div id="forecast-list"></div>
+      <!-- Add phone -->
+      <div class="input-group" id="add-group">
+        <label for="add-phone">Add Your Phone Number</label>
+        <div class="input-row">
+          <input
+            type="tel"
+            id="add-phone"
+            name="add-phone"
+            placeholder="e.g. +1 (312) 555-0100"
+            autocomplete="tel"
+            aria-describedby="add-status"
+          />
+          <button class="btn btn-primary" id="add-btn" aria-label="Add phone number">Add</button>
+        </div>
+        <div class="status-msg" id="add-status" role="status" aria-live="polite"></div>
+      </div>
 
-<p class="section-title" id="history-label" style="display:none;">Previous 10 Days</p>
-<div id="history-list"></div>
+      <div class="divider-line"></div>
 
-<p class="section-title" id="other-label" style="display:none;">Other Locations</p>
-<div id="other-locations"></div>
+      <!-- Delete phone -->
+      <div class="input-group" id="delete-group">
+        <label for="delete-phone">Remove Your Phone Number</label>
+        <div class="input-row">
+          <input
+            type="tel"
+            id="delete-phone"
+            name="delete-phone"
+            placeholder="Enter number to remove"
+            autocomplete="tel"
+            aria-describedby="delete-status"
+          />
+          <button class="btn btn-danger" id="delete-btn" aria-label="Remove phone number">Remove</button>
+        </div>
+        <div class="status-msg" id="delete-status" role="status" aria-live="polite"></div>
+      </div>
+    </section>
 
-<footer id="footer">
-  Data from <a href="https://open-meteo.com" target="_blank">Open-Meteo</a> (CC BY 4.0) · Updated every 15 min
-</footer>
+  </main>
 
-<script>
-  const DAT_FILE    = "5129707283.dat";
-  const STORAGE_KEY = "wx_extra_locations";
+  <footer>
+    <p>&copy; <span id="year"></span> <a href="https://weatherpage.info">WeatherPage.info</a> — Simple weather, no app needed.</p>
+  </footer>
 
-  // In-memory fallback when localStorage is unavailable (e.g. sandboxed iframes)
-  let _memExtras = null;
+  <script>
+    // Year
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-  function storageGet() {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"); }
-    catch(e) { return _memExtras || []; }
-  }
+    // ── Phone: Add (placeholder — does nothing yet) ──
+    document.getElementById('add-btn').addEventListener('click', function () {
+      const input = document.getElementById('add-phone');
+      const status = document.getElementById('add-status');
+      const val = input.value.trim();
 
-  function storageSet(arr) {
-    _memExtras = arr;
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); } catch(e) {}
-  }
-
-  // WMO weather code → { label, emoji }
-  const WMO = {
-    0:  { label: "Clear Sky",           emoji: "☀️" },
-    1:  { label: "Mainly Clear",        emoji: "🌤️" },
-    2:  { label: "Partly Cloudy",       emoji: "⛅" },
-    3:  { label: "Overcast",            emoji: "☁️" },
-    45: { label: "Fog",                 emoji: "🌫️" },
-    48: { label: "Freezing Fog",        emoji: "🌫️" },
-    51: { label: "Light Drizzle",       emoji: "🌦️" },
-    53: { label: "Drizzle",             emoji: "🌦️" },
-    55: { label: "Heavy Drizzle",       emoji: "🌧️" },
-    61: { label: "Light Rain",          emoji: "🌧️" },
-    63: { label: "Rain",                emoji: "🌧️" },
-    65: { label: "Heavy Rain",          emoji: "🌧️" },
-    71: { label: "Light Snow",          emoji: "🌨️" },
-    73: { label: "Snow",                emoji: "❄️" },
-    75: { label: "Heavy Snow",          emoji: "❄️" },
-    77: { label: "Snow Grains",         emoji: "🌨️" },
-    80: { label: "Light Showers",       emoji: "🌦️" },
-    81: { label: "Rain Showers",        emoji: "🌧️" },
-    82: { label: "Heavy Showers",       emoji: "⛈️" },
-    85: { label: "Snow Showers",        emoji: "🌨️" },
-    86: { label: "Heavy Snow Showers",  emoji: "❄️" },
-    95: { label: "Thunderstorm",        emoji: "⛈️" },
-    96: { label: "Thunderstorm w/ Hail", emoji: "⛈️" },
-    99: { label: "Heavy Thunderstorm",  emoji: "⛈️" },
-  };
-
-  function wmo(code) { return WMO[code] || { label: "Unknown", emoji: "🌡️" }; }
-
-  function windDir(deg) {
-    const dirs = ["N","NE","E","SE","S","SW","W","NW"];
-    return dirs[Math.round(deg / 45) % 8];
-  }
-
-  function dayLabel(isoDate, idx) {
-    const d = new Date(isoDate + "T12:00:00");
-    if (idx === 0) return "Today";
-    if (idx === 1) return "Tomorrow";
-    return d.toLocaleDateString("en-US", { weekday: "long" });
-  }
-
-  function uvLabel(uv) {
-    if (uv < 3)  return "Low";
-    if (uv < 6)  return "Moderate";
-    if (uv < 8)  return "High";
-    if (uv < 11) return "Very High";
-    return "Extreme";
-  }
-
-  function show(id)  { document.getElementById(id).style.display = "block"; }
-  function hide(id)  { document.getElementById(id).style.display = "none"; }
-
-  // ── Parse the .dat file + localStorage into a location array ───────────────
-  async function loadLocations() {
-    const res = await fetch(DAT_FILE);
-    const text = await res.text();
-    const base = text.trim().split("\n").slice(1).map(line => {
-      const parts = line.split(",");
-      return {
-        name:     parts[0].trim(),
-        subtitle: parts[1].trim(),
-        lat:      parseFloat(parts[2]),
-        lon:      parseFloat(parts[3]),
-        tz:       parts[4].trim(),
-      };
-    });
-    const extras = storageGet();
-    return [...base, ...extras].map((loc, idx) => ({ ...loc, idx }));
-  }
-
-  // ── Geocode a free-text location name via Open-Meteo ─────────────────────
-  async function geocode(query) {
-    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("Geocoding request failed");
-    const data = await res.json();
-    if (!data.results || data.results.length === 0) throw new Error("Location not found");
-    const r = data.results[0];
-    const state   = r.admin1  || "";
-    const county  = r.admin2  || "";
-    const elevFt  = r.elevation ? Math.round(r.elevation * 3.28084) : null;
-    const subtitle = [
-      county  ? county + " County" : "",
-      state,
-      elevFt  ? `Elev. ${elevFt.toLocaleString()} ft` : "",
-    ].filter(Boolean).join(" · ");
-    return {
-      name:     r.name + (state ? ", " + state : ""),
-      subtitle,
-      lat:      r.latitude,
-      lon:      r.longitude,
-      tz:       r.timezone,
-    };
-  }
-
-  // ── Save a new location to localStorage ──────────────────────────────────
-  function saveLocation(loc) {
-    const extras = storageGet();
-    extras.push({ name: loc.name, subtitle: loc.subtitle, lat: loc.lat, lon: loc.lon, tz: loc.tz });
-    storageSet(extras);
-  }
-
-  // ── Navigate to another location (same file, new ?loc= param) ─────────────
-  function goTo(idx) {
-    const url = new URL(window.location.href);
-    url.searchParams.set("loc", idx);
-    window.location.href = url.toString();
-  }
-
-  // ── Build "Other Locations" list ───────────────────────────────────────────
-  function buildOtherLocations(locations, currentIdx) {
-    const container = document.getElementById("other-locations");
-    container.innerHTML = "";
-
-    locations.forEach(loc => {
-      if (loc.idx === currentIdx) return;
-      const row = document.createElement("div");
-      row.className = "loc-row";
-      row.onclick = () => goTo(loc.idx);
-      row.innerHTML =
-        `<div><div class="loc-name">${loc.name}</div>` +
-        `<div class="loc-sub">${loc.subtitle}</div></div>` +
-        `<div class="loc-arrow">›</div>`;
-      container.appendChild(row);
-    });
-
-    // ── Add Location row ───────────────────────────────────────────────────
-    const addRow = document.createElement("div");
-    addRow.className = "loc-add-row";
-    addRow.innerHTML =
-      `<span class="loc-add-icon">＋</span>` +
-      `<input class="loc-add-input" id="loc-input" type="text" placeholder="City, State or ZIP" autocomplete="off" />` +
-      `<button class="loc-add-btn" id="loc-add-btn">Add</button>`;
-    container.appendChild(addRow);
-
-    const statusEl = document.createElement("div");
-    statusEl.className = "loc-add-status";
-    statusEl.id = "loc-add-status";
-    container.appendChild(statusEl);
-
-    const input = document.getElementById("loc-input");
-    const btn   = document.getElementById("loc-add-btn");
-
-    const setStatus = (msg, isErr = false) => {
-      statusEl.textContent = msg;
-      statusEl.className   = "loc-add-status" + (isErr ? " err" : "");
-    };
-
-    btn.addEventListener("click", async () => {
-      const query = input.value.trim();
-      if (!query) { setStatus("Enter a location name.", true); return; }
-      btn.disabled = true;
-      btn.textContent = "…";
-      setStatus("Looking up location…");
-      try {
-        const loc = await geocode(query);
-        // Check for duplicate
-        const all = await loadLocations();
-        const dup = all.find(l =>
-          Math.abs(l.lat - loc.lat) < 0.01 && Math.abs(l.lon - loc.lon) < 0.01
-        );
-        if (dup) {
-          setStatus(`Already in list as "${dup.name}".`, true);
-          btn.disabled = false;
-          btn.textContent = "Add";
-          return;
-        }
-        saveLocation(loc);
-        setStatus(`Added ${loc.name} — loading…`);
-        // Navigate to the new location (it will be last in the list)
-        const newIdx = all.length; // index after save
-        setTimeout(() => goTo(newIdx), 600);
-      } catch (e) {
-        setStatus(e.message || "Could not find that location.", true);
-        btn.disabled = false;
-        btn.textContent = "Add";
-      }
-    });
-
-    // Allow Enter key
-    input.addEventListener("keydown", e => {
-      if (e.key === "Enter") btn.click();
-    });
-
-    show("other-label");
-    show("other-locations");
-  }
-
-  // ── Load weather for a given location ─────────────────────────────────────
-  async function loadWeather(loc) {
-    const { lat: LAT, lon: LON, tz: TZ } = loc;
-
-    const forecastUrl =
-      `https://api.open-meteo.com/v1/forecast` +
-      `?latitude=${LAT}&longitude=${LON}` +
-      `&current=temperature_2m,apparent_temperature,relative_humidity_2m,` +
-        `wind_speed_10m,wind_direction_10m,weather_code,precipitation` +
-      `&daily=weather_code,temperature_2m_max,temperature_2m_min,` +
-        `precipitation_sum,wind_speed_10m_max,uv_index_max` +
-      `&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch` +
-      `&timezone=${encodeURIComponent(TZ)}&forecast_days=10`;
-
-    const historyUrl =
-      `https://api.open-meteo.com/v1/forecast` +
-      `?latitude=${LAT}&longitude=${LON}` +
-      `&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum,cloud_cover_mean` +
-      `&temperature_unit=fahrenheit&precipitation_unit=inch` +
-      `&timezone=${encodeURIComponent(TZ)}&past_days=10&forecast_days=0`;
-
-    const [res, histRes] = await Promise.all([fetch(forecastUrl), fetch(historyUrl)]);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    if (!histRes.ok) throw new Error(`History HTTP ${histRes.status}`);
-    return { data: await res.json(), histData: await histRes.json() };
-  }
-
-  // ── Main entry point ───────────────────────────────────────────────────────
-  async function init() {
-    // Reset UI
-    hide("current-card");
-    hide("forecast-list");
-    hide("history-list");
-    hide("other-locations");
-    hide("error-msg");
-    hide("forecast-label");
-    hide("history-label");
-    hide("other-label");
-    hide("footer");
-    hide("refresh-btn");
-    show("loading");
-
-    try {
-      // Read location index from URL param, default 0
-      const params = new URLSearchParams(window.location.search);
-      const locIdx = parseInt(params.get("loc") ?? "0", 10);
-
-      const locations = await loadLocations();
-      const loc = locations[locIdx] ?? locations[0];
-
-      // Update header & title
-      document.getElementById("page-title").textContent   = loc.name + " Weather";
-      document.getElementById("location-name").textContent = loc.name;
-      document.getElementById("location-sub").textContent  = loc.subtitle;
-
-      // Fetch weather
-      const { data, histData } = await loadWeather(loc);
-
-      // ── Current conditions ────────────────────────────────────────────────
-      const c = data.current;
-      const cw = wmo(c.weather_code);
-      document.getElementById("cur-icon").textContent  = cw.emoji;
-      document.getElementById("cur-temp").textContent  = `${Math.round(c.temperature_2m)}°`;
-      document.getElementById("cur-feels").textContent = `Feels like ${Math.round(c.apparent_temperature)}°F`;
-      document.getElementById("cur-desc").textContent  = cw.label;
-      document.getElementById("cur-hum").textContent   = `${c.relative_humidity_2m}%`;
-      document.getElementById("cur-wind").textContent  =
-        `${Math.round(c.wind_speed_10m)} mph ${windDir(c.wind_direction_10m)}`;
-      document.getElementById("cur-precip").textContent =
-        c.precipitation > 0 ? `${c.precipitation.toFixed(2)}"` : "None";
-      const uvVal = data.daily.uv_index_max[0];
-      document.getElementById("cur-uv").textContent =
-        `${Math.round(uvVal)} · ${uvLabel(uvVal)}`;
-
-      document.getElementById("updated").textContent =
-        `Updated ${new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}`;
-
-      // ── 10-Day Forecast ───────────────────────────────────────────────────
-      const d = data.daily;
-      const list = document.getElementById("forecast-list");
-      list.innerHTML = "";
-      for (let i = 0; i < d.time.length; i++) {
-        const dw = wmo(d.weather_code[i]);
-        const row = document.createElement("div");
-        row.className = "day-row";
-
-        const nameDiv = document.createElement("div");
-        nameDiv.className = "day-name" + (i === 0 ? " today-label" : "");
-        nameDiv.textContent = dayLabel(d.time[i], i);
-
-        const iconDiv = document.createElement("div");
-        iconDiv.className = "day-icon";
-        iconDiv.textContent = dw.emoji;
-
-        const infoDiv = document.createElement("div");
-        const descEl = document.createElement("div");
-        descEl.className = "day-desc";
-        descEl.textContent = dw.label;
-        const precipEl = document.createElement("div");
-        precipEl.className = "day-precip";
-        precipEl.textContent = d.precipitation_sum[i] > 0
-          ? `💧 ${d.precipitation_sum[i].toFixed(2)}"` : "";
-        infoDiv.append(descEl, precipEl);
-
-        const tempDiv = document.createElement("div");
-        tempDiv.className = "day-temps";
-        tempDiv.innerHTML =
-          `<span class="hi">${Math.round(d.temperature_2m_max[i])}°</span>` +
-          `<span style="color:var(--muted);margin:0 3px">/</span>` +
-          `<span class="lo">${Math.round(d.temperature_2m_min[i])}°</span>`;
-
-        row.append(nameDiv, iconDiv, infoDiv, tempDiv);
-        list.appendChild(row);
+      if (!val) {
+        status.style.color = '#f87171';
+        status.textContent = 'Please enter a phone number.';
+        return;
       }
 
-      // ── Previous 10 Days ──────────────────────────────────────────────────
-      const h = histData.daily;
-      const histList = document.getElementById("history-list");
-      histList.innerHTML = "";
-      for (let i = h.time.length - 1; i >= 0; i--) {
-        const hw = wmo(h.weather_code[i]);
-        const dateObj = new Date(h.time[i] + "T12:00:00");
-        const weekday = dateObj.toLocaleDateString("en-US", { weekday: "short" });
-        const dateStr = `${weekday} ${dateObj.getMonth()+1}/${dateObj.getDate()}`;
-
-        const row = document.createElement("div");
-        row.className = "hist-row";
-        const precipStr = h.precipitation_sum[i] > 0
-          ? `${h.precipitation_sum[i].toFixed(2)}"`
-          : `<span style="color:var(--muted)">—</span>`;
-        row.innerHTML =
-          `<div class="hist-date">${dateStr}</div>` +
-          `<div class="hist-icon">${hw.emoji}</div>` +
-          `<div class="hist-cell"><span class="hi">${Math.round(h.temperature_2m_max[i])}°</span>` +
-          `<span style="color:var(--muted);margin:0 3px">/</span>` +
-          `<span class="lo">${Math.round(h.temperature_2m_min[i])}°</span></div>` +
-          `<div class="hist-cell">${precipStr}</div>`;
-        histList.appendChild(row);
+      // Basic phone format check
+      if (!/^[\d\s\-\+\(\)]{7,15}$/.test(val.replace(/\s/g,''))) {
+        status.style.color = '#f87171';
+        status.textContent = 'Please enter a valid phone number.';
+        return;
       }
 
-      // ── Show everything ───────────────────────────────────────────────────
-      hide("loading");
-      show("current-card");
-      show("forecast-label");
-      show("forecast-list");
-      show("history-label");
-      show("history-list");
-      buildOtherLocations(locations, loc.idx);
-      show("refresh-btn");
-      show("footer");
+      // Placeholder — no action yet
+      status.style.color = '#34d399';
+      status.textContent = '✓ Phone number received (feature coming soon).';
+      input.value = '';
+    });
 
-    } catch (err) {
-      hide("loading");
-      const errEl = document.getElementById("error-msg");
-      errEl.textContent = `⚠️ Could not load weather data. ${err.message}`;
-      errEl.style.display = "block";
-      show("refresh-btn");
-    }
-  }
+    // ── Phone: Delete (placeholder — does nothing yet) ──
+    document.getElementById('delete-btn').addEventListener('click', function () {
+      const input = document.getElementById('delete-phone');
+      const status = document.getElementById('delete-status');
+      const val = input.value.trim();
 
-  init();
-</script>
+      if (!val) {
+        status.style.color = '#f87171';
+        status.textContent = 'Please enter a phone number to remove.';
+        return;
+      }
+
+      if (!/^[\d\s\-\+\(\)]{7,15}$/.test(val.replace(/\s/g,''))) {
+        status.style.color = '#f87171';
+        status.textContent = 'Please enter a valid phone number.';
+        return;
+      }
+
+      // Placeholder — no action yet
+      status.style.color = '#94a3b8';
+      status.textContent = '✓ Removal request received (feature coming soon).';
+      input.value = '';
+    });
+  </script>
+
 </body>
 </html>
