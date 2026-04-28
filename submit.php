@@ -110,12 +110,12 @@ file_put_contents($dat_file, $dat_contents);
 // ── Build personalized weather page from template ─────────────
 $template = file_get_contents(__DIR__ . '/template.html');
 
-// Strip inline comments before replacing so the regex matches regardless of comment text
-$template = preg_replace('/const LAT\s*=\s*[^;\/]+[^;]*;[^\n]*/',             "const LAT           = {$lat};",          $template);
-$template = preg_replace('/const LON\s*=\s*[^;\/]+[^;]*;[^\n]*/',             "const LON           = {$lon};",          $template);
-$template = preg_replace('/const TZ\s*=\s*"[^"]*";[^\n]*/',                   "const TZ            = \"{$tz}\";",       $template);
-$template = preg_replace('/const LOCATION_NAME\s*=\s*"[^"]*";[^\n]*/',        "const LOCATION_NAME = \"{$location}\";", $template);
-$template = preg_replace('/const LOCATION_SUB\s*=\s*"[^"]*";[^\n]*/',         "const LOCATION_SUB  = \"{$sub}\";",      $template);
+// Replace config constants — single line, anchored tightly
+$template = preg_replace('/^(\s*const LAT\s*=\s*).*$/m',           "  const LAT           = {$lat};",          $template);
+$template = preg_replace('/^(\s*const LON\s*=\s*).*$/m',           "  const LON           = {$lon};",          $template);
+$template = preg_replace('/^(\s*const TZ\s*=\s*).*$/m',            "  const TZ            = \"{$tz}\";",       $template);
+$template = preg_replace('/^(\s*const LOCATION_NAME\s*=\s*).*$/m', "  const LOCATION_NAME = \"{$location}\";", $template);
+$template = preg_replace('/^(\s*const LOCATION_SUB\s*=\s*).*$/m',  "  const LOCATION_SUB  = \"{$sub}\";",      $template);
 $template = str_replace('<title id="page-title">Weather</title>', "<title>{$location} Weather</title>", $template);
 
 // ── Write .html file ──────────────────────────────────────────
