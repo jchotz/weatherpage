@@ -28,6 +28,9 @@ if (strlen($phone_digits) < 10 || strlen($phone_digits) > 11) {
 // Ensure 11-digit E.164 format for SMS (add leading 1 if 10 digits)
 $phone_e164 = (strlen($phone_digits) === 10) ? '1' . $phone_digits : $phone_digits;
 
+// MD5 hash of digits for filenames
+$phone_hash = md5($phone_digits);
+
 // ── Geocode city/state via Open-Meteo ─────────────────────────
 $geo_name = urlencode($city_state);
 $geo_url  = "https://geocoding-api.open-meteo.com/v1/search?name={$geo_name}&count=1&language=en&format=json";
@@ -53,7 +56,7 @@ $sub      = $state ? "{$state} · Elev. {$elev}" : $elev;
 $dat_dir = __DIR__ . '/dat';
 if (!is_dir($dat_dir)) mkdir($dat_dir, 0755, true);
 
-$dat_file     = "{$dat_dir}/{$phone_digits}.dat";
+$dat_file     = "{$dat_dir}/{$phone_hash}.dat";
 $dat_contents = "city_state={$city_state}\nphone={$phone}\nlat={$lat}\nlon={$lon}\ntimezone={$tz}\nlocation={$location}\n";
 file_put_contents($dat_file, $dat_contents);
 
@@ -68,11 +71,11 @@ $template = preg_replace('/const LOCATION_SUB\s*=\s*"[^"]*";/',  "const LOCATION
 $template = str_replace('<title id="page-title">Weather</title>', "<title>{$location} Weather</title>", $template);
 
 // ── Write .html file ──────────────────────────────────────────
-$html_file = __DIR__ . "/{$phone_digits}.html";
+$html_file = __DIR__ . "/{$phone_hash}.html";
 file_put_contents($html_file, $template);
 
 // ── Send SMS via ClickSend ─────────────────────────────────────
-$page_url = "https://weatherpage.info/{$phone_digits}.html";
+$page_url = "https://weatherpage.info/{$phone_hash}.html";
 $sms_body = "Your WeatherPage for {$location} is ready: {$page_url} Reply STOP to opt out.";
 
 $sms_payload = json_encode([
