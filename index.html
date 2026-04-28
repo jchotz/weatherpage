@@ -177,109 +177,6 @@
       margin-top: 1px;
     }
 
-    /* ── Get Started section ── */
-    .get-started {
-      background: rgba(37,99,235,0.12);
-      border: 1px solid rgba(37,99,235,0.35);
-      border-radius: 1.25rem;
-      padding: 1.5rem 1.25rem;
-      margin-top: 2rem;
-    }
-    .get-started h2 {
-      font-size: clamp(1rem, 3vw, 1.2rem);
-      font-weight: 600;
-      color: #93c5fd;
-      margin-bottom: 0.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .get-started .sub {
-      font-size: 0.82rem;
-      color: #64748b;
-      margin-bottom: 1.5rem;
-    }
-
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-      margin-bottom: 1rem;
-    }
-    .field label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #94a3b8;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .field input {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      border-radius: 0.75rem;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      color: #e2e8f0;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-      -webkit-appearance: none;
-    }
-    .field input::placeholder { color: #475569; }
-    .field input:focus { border-color: #2563eb; }
-    .field input.error { border-color: #ef4444; }
-    .field-error {
-      font-size: 0.78rem;
-      color: #f87171;
-      min-height: 1rem;
-    }
-
-    .btn-send {
-      width: 100%;
-      margin-top: 0.5rem;
-      padding: 0.85rem 1rem;
-      border-radius: 0.75rem;
-      border: none;
-      background: #2563eb;
-      color: #fff;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      letter-spacing: 0.02em;
-      transition: opacity 0.2s, transform 0.1s;
-    }
-    .btn-send:hover { opacity: 0.88; }
-    .btn-send:active { transform: scale(0.98); }
-    .btn-send:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .submit-status {
-      margin-top: 1rem;
-      font-size: 0.88rem;
-      text-align: center;
-      min-height: 1.2rem;
-    }
-    .submit-status.success { color: #34d399; }
-    .submit-status.error   { color: #f87171; }
-
-    .result-link {
-      display: none;
-      margin-top: 1rem;
-      padding: 1rem;
-      background: rgba(52,211,153,0.1);
-      border: 1px solid rgba(52,211,153,0.3);
-      border-radius: 0.75rem;
-      text-align: center;
-    }
-    .result-link p { font-size: 0.85rem; color: #94a3b8; margin-bottom: 0.5rem; }
-    .result-link a {
-      color: #34d399;
-      font-weight: 600;
-      font-size: 0.95rem;
-      word-break: break-all;
-      text-decoration: none;
-    }
-    .result-link a:hover { text-decoration: underline; }
-
     /* ── Phone number section ── */
     .phone-section {
       background: rgba(255,255,255,0.04);
@@ -378,7 +275,7 @@
     @media (min-width: 900px) {
       .hero { padding: 4rem 2rem 5rem; }
       main { padding: 0 2rem 5rem; }
-      .feature-card, .get-started, .phone-section { padding: 2rem; }
+      .feature-card, .phone-section { padding: 2rem; }
     }
   </style>
 </head>
@@ -421,49 +318,6 @@
         <li><span class="bullet" aria-hidden="true">✓</span>No app download needed</li>
       </ul>
     </div>
-
-    <!-- Get Started Now -->
-    <section class="get-started" aria-labelledby="get-started-heading">
-      <h2 id="get-started-heading">🚀 Get Started Now</h2>
-      <p class="sub">Enter your city and phone number to get your personal weather page link.</p>
-
-      <div class="field">
-        <label for="gs-city">City, State</label>
-        <input
-          type="text"
-          id="gs-city"
-          name="gs-city"
-          placeholder="e.g. Chicago, IL"
-          autocomplete="off"
-          aria-describedby="gs-city-error"
-          inputmode="text"
-        />
-        <div class="field-error" id="gs-city-error" role="alert" aria-live="polite"></div>
-      </div>
-
-      <div class="field">
-        <label for="gs-phone">USA Phone Number</label>
-        <input
-          type="tel"
-          id="gs-phone"
-          name="gs-phone"
-          placeholder="e.g. (312) 555-0100"
-          autocomplete="tel"
-          aria-describedby="gs-phone-error"
-          inputmode="tel"
-        />
-        <div class="field-error" id="gs-phone-error" role="alert" aria-live="polite"></div>
-      </div>
-
-      <button class="btn-send" id="send-btn">Send It</button>
-
-      <div class="submit-status" id="submit-status" role="status" aria-live="polite"></div>
-
-      <div class="result-link" id="result-link">
-        <p>Your personal weather page is ready:</p>
-        <a id="result-url" href="#" target="_blank"></a>
-      </div>
-    </section>
 
     <!-- Phone number manage section -->
     <section class="phone-section" aria-labelledby="phone-heading">
@@ -516,100 +370,13 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ── Validators ────────────────────────────────────────────────
-    function validateCity(val) {
-      // Must have at least "City, ST" format — letters, spaces, comma, period allowed
-      return /^[a-zA-Z\s\.\-]+,\s*[a-zA-Z\s]{2,}$/.test(val.trim());
-    }
-
+    // ── Phone validation ──────────────────────────────────────────
     function validateUSPhone(val) {
-      // Strip all non-digits
       const digits = val.replace(/\D/g, '');
-      // Must be 10 digits (or 11 starting with 1)
       if (digits.length === 10) return true;
       if (digits.length === 11 && digits[0] === '1') return true;
       return false;
     }
-
-    // ── Get Started — Send It ─────────────────────────────────────
-    document.getElementById('send-btn').addEventListener('click', async function () {
-      const cityInput  = document.getElementById('gs-city');
-      const phoneInput = document.getElementById('gs-phone');
-      const cityErr    = document.getElementById('gs-city-error');
-      const phoneErr   = document.getElementById('gs-phone-error');
-      const statusEl   = document.getElementById('submit-status');
-      const resultBox  = document.getElementById('result-link');
-      const resultUrl  = document.getElementById('result-url');
-      const btn        = this;
-
-      // Reset
-      cityErr.textContent  = '';
-      phoneErr.textContent = '';
-      cityInput.classList.remove('error');
-      phoneInput.classList.remove('error');
-      statusEl.textContent = '';
-      statusEl.className   = 'submit-status';
-      resultBox.style.display = 'none';
-
-      const cityVal  = cityInput.value.trim();
-      const phoneVal = phoneInput.value.trim();
-      let valid = true;
-
-      if (!cityVal) {
-        cityErr.textContent = 'Please enter a city and state (e.g. Chicago, IL).';
-        cityInput.classList.add('error');
-        valid = false;
-      } else if (!validateCity(cityVal)) {
-        cityErr.textContent = 'Please use the format: City, State (e.g. Chicago, IL).';
-        cityInput.classList.add('error');
-        valid = false;
-      }
-
-      if (!phoneVal) {
-        phoneErr.textContent = 'Please enter your USA phone number.';
-        phoneInput.classList.add('error');
-        valid = false;
-      } else if (!validateUSPhone(phoneVal)) {
-        phoneErr.textContent = 'Please enter a valid 10-digit USA phone number.';
-        phoneInput.classList.add('error');
-        valid = false;
-      }
-
-      if (!valid) return;
-
-      // Submit to PHP
-      btn.disabled = true;
-      btn.textContent = 'Creating your page…';
-      statusEl.textContent = '';
-
-      try {
-        const form = new FormData();
-        form.append('city_state', cityVal);
-        form.append('phone', phoneVal);
-
-        const res  = await fetch('submit.php', { method: 'POST', body: form });
-        const data = await res.json();
-
-        if (data.ok) {
-          statusEl.className   = 'submit-status success';
-          statusEl.textContent = '✓ Your weather page is ready!';
-          resultUrl.href        = data.url;
-          resultUrl.textContent = data.url;
-          resultBox.style.display = 'block';
-          cityInput.value  = '';
-          phoneInput.value = '';
-        } else {
-          statusEl.className   = 'submit-status error';
-          statusEl.textContent = data.error || 'Something went wrong. Please try again.';
-        }
-      } catch (e) {
-        statusEl.className   = 'submit-status error';
-        statusEl.textContent = 'Network error. Please try again.';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = 'Send It';
-      }
-    });
 
     // ── Manage: Add phone (placeholder) ──────────────────────────
     document.getElementById('add-btn').addEventListener('click', function () {
