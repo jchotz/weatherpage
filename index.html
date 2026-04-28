@@ -177,85 +177,6 @@
       margin-top: 1px;
     }
 
-    /* ── Phone number section ── */
-    .phone-section {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 1.25rem;
-      padding: 1.5rem 1.25rem;
-      margin-top: 2rem;
-    }
-    .phone-section h2 {
-      font-size: clamp(1rem, 3vw, 1.15rem);
-      font-weight: 600;
-      color: #93c5fd;
-      margin-bottom: 0.25rem;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .phone-section .sub {
-      font-size: 0.8rem;
-      color: #64748b;
-      margin-bottom: 1.25rem;
-    }
-    .input-group {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    .input-group label {
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: #94a3b8;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .input-row { display: flex; gap: 0.5rem; }
-    .input-row input {
-      flex: 1;
-      padding: 0.7rem 1rem;
-      border-radius: 0.75rem;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      color: #e2e8f0;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-      -webkit-appearance: none;
-    }
-    .input-row input::placeholder { color: #475569; }
-    .input-row input:focus { border-color: #2563eb; }
-
-    .btn {
-      padding: 0.7rem 1.1rem;
-      border-radius: 0.75rem;
-      border: none;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      white-space: nowrap;
-    }
-    .btn:active { transform: scale(0.97); }
-    .btn-primary { background: #2563eb; color: #fff; }
-    .btn-primary:hover { opacity: 0.88; }
-    .btn-danger  { background: #dc2626; color: #fff; }
-    .btn-danger:hover  { opacity: 0.88; }
-
-    .divider-line {
-      height: 1px;
-      background: rgba(255,255,255,0.08);
-      margin: 1rem 0;
-    }
-    .status-msg {
-      font-size: 0.82rem;
-      color: #64748b;
-      margin-top: 0.35rem;
-      min-height: 1.1rem;
-    }
-
     /* ── Footer ── */
     footer {
       text-align: center;
@@ -319,48 +240,6 @@
       </ul>
     </div>
 
-    <!-- Phone number manage section -->
-    <section class="phone-section" aria-labelledby="phone-heading">
-      <h2 id="phone-heading">📲 Manage Phone Number</h2>
-      <p class="sub">Add or remove your number from weather alerts (coming soon)</p>
-
-      <!-- Add phone -->
-      <div class="input-group" id="add-group">
-        <label for="add-phone">Add Your Phone Number</label>
-        <div class="input-row">
-          <input
-            type="tel"
-            id="add-phone"
-            name="add-phone"
-            placeholder="e.g. (312) 555-0100"
-            autocomplete="tel"
-            aria-describedby="add-status"
-          />
-          <button class="btn btn-primary" id="add-btn" aria-label="Add phone number">Add</button>
-        </div>
-        <div class="status-msg" id="add-status" role="status" aria-live="polite"></div>
-      </div>
-
-      <div class="divider-line"></div>
-
-      <!-- Delete phone -->
-      <div class="input-group" id="delete-group">
-        <label for="delete-phone">Remove Your Phone Number</label>
-        <div class="input-row">
-          <input
-            type="tel"
-            id="delete-phone"
-            name="delete-phone"
-            placeholder="Enter number to remove"
-            autocomplete="tel"
-            aria-describedby="delete-status"
-          />
-          <button class="btn btn-danger" id="delete-btn" aria-label="Remove phone number">Remove</button>
-        </div>
-        <div class="status-msg" id="delete-status" role="status" aria-live="polite"></div>
-      </div>
-    </section>
-
   </main>
 
   <footer>
@@ -370,53 +249,7 @@
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // ── Phone validation ──────────────────────────────────────────
-    function validateUSPhone(val) {
-      const digits = val.replace(/\D/g, '');
-      if (digits.length === 10) return true;
-      if (digits.length === 11 && digits[0] === '1') return true;
-      return false;
-    }
 
-    // ── Manage: Add phone (placeholder) ──────────────────────────
-    document.getElementById('add-btn').addEventListener('click', function () {
-      const input  = document.getElementById('add-phone');
-      const status = document.getElementById('add-status');
-      const val    = input.value.trim();
-      if (!val) {
-        status.style.color = '#f87171';
-        status.textContent = 'Please enter a phone number.';
-        return;
-      }
-      if (!validateUSPhone(val)) {
-        status.style.color = '#f87171';
-        status.textContent = 'Please enter a valid 10-digit USA phone number.';
-        return;
-      }
-      status.style.color = '#34d399';
-      status.textContent = '✓ Phone number received (feature coming soon).';
-      input.value = '';
-    });
-
-    // ── Manage: Delete phone (placeholder) ───────────────────────
-    document.getElementById('delete-btn').addEventListener('click', function () {
-      const input  = document.getElementById('delete-phone');
-      const status = document.getElementById('delete-status');
-      const val    = input.value.trim();
-      if (!val) {
-        status.style.color = '#f87171';
-        status.textContent = 'Please enter a phone number to remove.';
-        return;
-      }
-      if (!validateUSPhone(val)) {
-        status.style.color = '#f87171';
-        status.textContent = 'Please enter a valid 10-digit USA phone number.';
-        return;
-      }
-      status.style.color = '#94a3b8';
-      status.textContent = '✓ Removal request received (feature coming soon).';
-      input.value = '';
-    });
   </script>
 
 </body>
