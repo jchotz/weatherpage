@@ -32,17 +32,44 @@ $phone_e164 = (strlen($phone_digits) === 10) ? '1' . $phone_digits : $phone_digi
 $phone_hash = md5($phone_digits);
 
 // ── Geocode city/state via Open-Meteo ─────────────────────────
-$geo_name = urlencode($city_state);
-$geo_url  = "https://geocoding-api.open-meteo.com/v1/search?name={$geo_name}&count=1&language=en&format=json";
+// Split "City, State" — search on city name only, then match state
+$parts      = array_map('trim', explode(',', $city_state, 2));
+$city_only  = $parts[0];
+$state_hint = strtolower($parts[1] ?? '');
+
+$geo_url  = "https://geocoding-api.open-meteo.com/v1/search?name=" . urlencode($city_only) . "&count=10&language=en&format=json";
 $geo_json = file_get_contents($geo_url);
 $geo      = json_decode($geo_json, true);
 
-if (empty($geo['results'][0])) {
+if (empty($geo['results'])) {
     echo json_encode(['ok' => false, 'error' => 'Could not find that city. Please check the spelling.']);
     exit;
 }
 
-$result   = $geo['results'][0];
+// Try to match state — compare against admin1 (full name) and abbreviation
+$result = null;
+foreach ($geo['results'] as $r) {
+    if (strtolower($r['country_code'] ?? '') !== 'us') continue;
+    $admin1 = strtolower($r['admin1'] ?? '');
+    // Match full state name (e.g. "iowa") or 2-letter abbrev (e.g. "ia")
+    if ($state_hint && (str_contains($admin1, $state_hint) || str_contains($state_hint, substr($admin1, 0, 4)))) {
+        $result = $r;
+        break;
+    }
+}
+// Fallback: first US result
+if (!$result) {
+    foreach ($geo['results'] as $r) {
+        if (strtolower($r['country_code'] ?? '') === 'us') { $result = $r; break; }
+    }
+}
+// Final fallback: first result regardless of country
+if (!$result) $result = $geo['results'][0];
+
+if (!$result) {
+    echo json_encode(['ok' => false, 'error' => 'Could not find that city. Please check the spelling.']);
+    exit;
+}
 $lat      = $result['latitude'];
 $lon      = $result['longitude'];
 $tz       = $result['timezone']  ?? 'America/Chicago';
