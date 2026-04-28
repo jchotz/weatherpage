@@ -46,13 +46,33 @@ if (empty($geo['results'])) {
     exit;
 }
 
-// Try to match state — compare against admin1 (full name) and abbreviation
+// State abbreviation → full name map for matching
+$state_abbrevs = [
+    'al'=>'alabama','ak'=>'alaska','az'=>'arizona','ar'=>'arkansas','ca'=>'california',
+    'co'=>'colorado','ct'=>'connecticut','de'=>'delaware','fl'=>'florida','ga'=>'georgia',
+    'hi'=>'hawaii','id'=>'idaho','il'=>'illinois','in'=>'indiana','ia'=>'iowa',
+    'ks'=>'kansas','ky'=>'kentucky','la'=>'louisiana','me'=>'maine','md'=>'maryland',
+    'ma'=>'massachusetts','mi'=>'michigan','mn'=>'minnesota','ms'=>'mississippi',
+    'mo'=>'missouri','mt'=>'montana','ne'=>'nebraska','nv'=>'nevada','nh'=>'new hampshire',
+    'nj'=>'new jersey','nm'=>'new mexico','ny'=>'new york','nc'=>'north carolina',
+    'nd'=>'north dakota','oh'=>'ohio','ok'=>'oklahoma','or'=>'oregon','pa'=>'pennsylvania',
+    'ri'=>'rhode island','sc'=>'south carolina','sd'=>'south dakota','tn'=>'tennessee',
+    'tx'=>'texas','ut'=>'utah','vt'=>'vermont','va'=>'virginia','wa'=>'washington',
+    'wv'=>'west virginia','wi'=>'wisconsin','wy'=>'wyoming','dc'=>'district of columbia'
+];
+
+// Resolve state hint: if 2-letter abbrev, expand to full name
+$state_normalized = strtolower(trim($state_hint));
+if (isset($state_abbrevs[$state_normalized])) {
+    $state_normalized = $state_abbrevs[$state_normalized];
+}
+
+// Try to match state — compare against admin1 full name
 $result = null;
 foreach ($geo['results'] as $r) {
     if (strtolower($r['country_code'] ?? '') !== 'us') continue;
     $admin1 = strtolower($r['admin1'] ?? '');
-    // Match full state name (e.g. "iowa") or 2-letter abbrev (e.g. "ia")
-    if ($state_hint && (str_contains($admin1, $state_hint) || str_contains($state_hint, substr($admin1, 0, 4)))) {
+    if ($state_normalized && str_contains($admin1, $state_normalized)) {
         $result = $r;
         break;
     }
@@ -90,11 +110,12 @@ file_put_contents($dat_file, $dat_contents);
 // ── Build personalized weather page from template ─────────────
 $template = file_get_contents(__DIR__ . '/template.html');
 
-$template = preg_replace('/const LAT\s*=\s*[^;]+;/',             "const LAT           = {$lat};",        $template);
-$template = preg_replace('/const LON\s*=\s*[^;]+;/',             "const LON           = {$lon};",        $template);
-$template = preg_replace('/const TZ\s*=\s*"[^"]*";/',            "const TZ            = \"{$tz}\";",     $template);
-$template = preg_replace('/const LOCATION_NAME\s*=\s*"[^"]*";/', "const LOCATION_NAME = \"{$location}\";", $template);
-$template = preg_replace('/const LOCATION_SUB\s*=\s*"[^"]*";/',  "const LOCATION_SUB  = \"{$sub}\";",    $template);
+// Strip inline comments before replacing so the regex matches regardless of comment text
+$template = preg_replace('/const LAT\s*=\s*[^;\/]+[^;]*;[^\n]*/',             "const LAT           = {$lat};",          $template);
+$template = preg_replace('/const LON\s*=\s*[^;\/]+[^;]*;[^\n]*/',             "const LON           = {$lon};",          $template);
+$template = preg_replace('/const TZ\s*=\s*"[^"]*";[^\n]*/',                   "const TZ            = \"{$tz}\";",       $template);
+$template = preg_replace('/const LOCATION_NAME\s*=\s*"[^"]*";[^\n]*/',        "const LOCATION_NAME = \"{$location}\";", $template);
+$template = preg_replace('/const LOCATION_SUB\s*=\s*"[^"]*";[^\n]*/',         "const LOCATION_SUB  = \"{$sub}\";",      $template);
 $template = str_replace('<title id="page-title">Weather</title>', "<title>{$location} Weather</title>", $template);
 
 // ── Write .html file ──────────────────────────────────────────
